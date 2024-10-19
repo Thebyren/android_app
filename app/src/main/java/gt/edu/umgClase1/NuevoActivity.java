@@ -10,11 +10,19 @@ import androidx.core.view.WindowInsetsCompat;
 
 public class NuevoActivity extends AppCompatActivity {
 
+    Button btn_regresar;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_nuevo);
+        btn_regresar = findViewById(R.id.btn_regresar);
+        btn_regresar.setOnClickListener( V ->{
+            finish();
+        });
+
+
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
