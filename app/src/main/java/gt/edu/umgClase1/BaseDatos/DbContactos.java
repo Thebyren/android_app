@@ -40,15 +40,13 @@ public class DbContactos extends DbHelper {
         try {
             DbHelper helper = new DbHelper(context);
             SQLiteDatabase db = helper.getReadableDatabase();
-            ArrayList<Contactos> listaContactos = new ArrayList<>();
+            ArrayList<Contactos> listaContactos = new ArrayList();
             Contactos contacto = null;
             Cursor cursorContactos = db.rawQuery("select * from " + DbHelper.TABLE_CONTACTOS, null);
 
             if (cursorContactos.moveToFirst()) {
                 do {
-                    contacto = new Contactos();
-                    
-                    // Suponiendo que las columnas en la base de datos son: Id, Nombre, Telefono, Email
+                    contacto = new Contactos();                    
                     contacto.setId(cursorContactos.getInt(cursorContactos.getColumnIndex("Id")));
                     contacto.setNombre(cursorContactos.getString(cursorContactos.getColumnIndex("Nombre")));
                     contacto.setTelefono(cursorContactos.getString(cursorContactos.getColumnIndex("Telefono")));
@@ -57,10 +55,12 @@ public class DbContactos extends DbHelper {
                     listaContactos.add(contacto);
                 } while (cursorContactos.moveToNext());
             }
-            cursorContactos.close(); // No olvides cerrar el cursor
-            db.close(); // También es buena práctica cerrar la base de datos
+
+            cursorContactos.close();
+            db.close();
+            return listaContactos;
         } catch (Exception e) {
-            e.printStackTrace(); // Imprimir la excepción para depuración
+            e.printStackTrace();
         }
 
     }
