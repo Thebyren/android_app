@@ -1,59 +1,87 @@
-package gt.edu.umgClase1;
-
-import android.annotation.SuppressLint;
-import android.database.sqlite.SQLiteDatabase;
-import android.os.Bundle;
-import android.widget.Button;
-import android.widget.TextView;
-import android.widget.Toast;
-
-import androidx.activity.EdgeToEdge;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
-
-import gt.edu.umgClase1.BaseDatos.DbHelper;
-
 public class MainActivity extends AppCompatActivity {
 
-    Button btnSaludo, btnCrearDb;
+    Button bntSaludo,btnCrearDb,btn_nuevo;
     TextView tvSaludo;
+    RecyclerView listaContactos;
 
-    @SuppressLint("MissingInflatedId")
+    ArrayList<Contactos> listaArrayContactos;
+
+
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_main);
 
-        // CODIGO NUEVO
-        btnSaludo = findViewById(R.id.btnSaludo);
+        //nuevo inicio
+        //poner la lista
+        String error;
+        try{
+            listaContactos = findViewById(R.id.listaContactos);
+
+            listaContactos.setLayoutManager(new LinearLayoutManager(this));
+        } catch (Exception e) {
+            Toast.makeText(this, "Error al cargar lista:"+ e.getMessage(), Toast.LENGTH_SHORT).show();
+            error = e.getMessage();
+        }
+
+
+
+  //
+        DbContactos dbContactos = new DbContactos(this);
+        listaArrayContactos =  new ArrayList<>();   //dbContactos.mostrarContactos() ;
+
+
+        //llamamos a nuestro adaptador y le mandamos todos los contactos de nuestra consulta.
+        ListaContactosAdapter adapter = new ListaContactosAdapter(dbContactos.mostrarContactos());
+        //le pasamos el adaptador a nuestro recycler view y nuestra información estructurada.
+        listaContactos.setAdapter(adapter);
+
+
+
+
+        //codigo clase pasada
+        bntSaludo = findViewById(R.id.btnSaludo);
         tvSaludo = findViewById(R.id.tvSaludo);
         btnCrearDb = findViewById(R.id.btnCrearDb);
-
-        btnSaludo.setOnClickListener(v -> {
-            Toast.makeText(this, "Aviso Ruldin", Toast.LENGTH_LONG).show();
-            tvSaludo.setText("Hola Jairo");
+        btn_nuevo = findViewById(R.id.btn_nuevo);
+        //nueva actividad
+        btn_nuevo.setOnClickListener(v -> {
+            //Intent intent = new Intent(this, NuevoActivity.class);
+            //startActivity(intent);
+            //crear registro llama a la activity NuevoActivity
+                Toast.makeText(this, "Creando Registro", Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(this, NuevoActivity.class);
+                startActivity(intent);
+            //fin
         });
 
+//crear db
         btnCrearDb.setOnClickListener(v -> {
 
             //crear base de datos
             DbHelper dbHelper = new DbHelper(this);
             dbHelper.getWritableDatabase();
             SQLiteDatabase db = dbHelper.getWritableDatabase();
-            if(db != null){
+            if (db!=null) {
                 Toast.makeText(this, "Base de datos creada", Toast.LENGTH_SHORT).show();
                 tvSaludo.setText("Base de datos creada");
-            }else{
-                Toast.makeText(this, "Error al crear la base de datos", Toast.LENGTH_SHORT).show();
-                tvSaludo.setText("Error al crear la base de datos");
+                //new DbContactos().insertaContacto("Ruldin", "12345678", "xxqgg.com");
+            } else {
+                Toast.makeText(this, "Error al crear base de datos", Toast.LENGTH_SHORT).show();
+                tvSaludo.setText("Error al crear base de datos");
             }
-            //CREAR UN BOTON NUEVO QUE LLAME AL NUEVO ACTIVIY CON EL COD QUE MANDO EL INGE
-            //EN EL SEGUNDO ACTIVITY COLOCAR PARA GRABAR INFO
-
         });
+
+
+        bntSaludo.setOnClickListener(v -> {
+            Toast.makeText(this, "Aviso Ruldin", Toast.LENGTH_SHORT).show();
+            tvSaludo.setText("Hola Ruldin");
+        });
+
+
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
